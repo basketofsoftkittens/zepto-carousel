@@ -23,7 +23,8 @@
 
     $.supports = {
         transform: !!($.CSS.getProperty('Transform')),
-        transform3d: !!(window.WebKitCSSMatrix && 'm11' in new WebKitCSSMatrix())
+        transform3d: !!(window.WebKitCSSMatrix && 'm11' in new WebKitCSSMatrix()),
+        zepto: !!(window.zepto)
     };
 
     $.supports.addClass = function () {
@@ -45,7 +46,7 @@
             return element.style.left = delta;
         }
     };
-})(Zepto);
+})(window.Zepto || window.jQuery);
 
 
 ;(function ($) {
@@ -93,6 +94,7 @@
                             btn.next.addClass('disable');
                         }
                         current = element;
+                        container.trigger('moved');
                     }
                 },
                 prev: function () {
@@ -106,16 +108,17 @@
                             btn.prev.addClass('disable');
                         }
                         current = element;
+                        container.trigger('moved');
                     }
                 }
             };
 
         // SWIPES
         container.on('touchstart', function (event) {
-            var x = event.touches[0].pageX;
+            var x = event.originalEvent.touches[0].pageX;
             current.addClass('moving');
             function animate(event) {
-                $.translateX(current[0], event.touches[0].pageX - x);
+                $.translateX(current[0], event.originalEvent.touches[0].pageX - x);
             };
             function stop(event) {
                 doc.off('touchmove', animate);
@@ -125,8 +128,9 @@
             doc.bind('touchmove', animate);
             doc.bind('touchend touchcancel', stop);
         });
-        container.on('swipeLeft', move.next);
-        container.on('swipeRight', move.prev);
+
+        container.on( ($.supports.zepto ? 'swipeLeft': 'swipeleft'), move.next);
+        container.on( ($.supports.zepto ? 'swipeRight': 'swiperight'), move.prev);
 
         // BTNS
         btn.prev.on(defaults.tapGesture, move.prev);
@@ -138,4 +142,4 @@
         }
     };
 
-})(Zepto);
+})(window.Zepto || window.jQuery);
