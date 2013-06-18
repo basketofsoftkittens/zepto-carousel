@@ -1,4 +1,4 @@
-# Zepto Carousel
+# Zepto and jQuery Mobile Carousel
 
 http://jcemer.com/zepto-carousel
 
